@@ -1,12 +1,24 @@
-import { AuthCheckResult, CustomAuthVerifier, IdToken } from "toto-api-controller/dist/model/CustomAuthVerifier";
-const { verifyToken } = require('./api/AuthAPI');
+import { AuthCheckResult, CustomAuthVerifier, IdToken } from "toto-api-controller";
+import jwt from 'jsonwebtoken';
+
+function verifyAndDecode(token: string, jwtSigningKey: string) {
+
+    try {
+        return jwt.verify(token, jwtSigningKey)
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+
+}
 
 export class TotoAuthProvider implements CustomAuthVerifier {
 
-    authAPIEndpoint: string;
+    jwtSigningKey: string;
 
-    constructor(authAPIEndpoint: string) {
-        this.authAPIEndpoint = authAPIEndpoint;
+    constructor(jwtSigningKey: string) {
+        this.jwtSigningKey = jwtSigningKey;
+
     }
 
     getAuthProvider(): string {
@@ -15,19 +27,17 @@ export class TotoAuthProvider implements CustomAuthVerifier {
 
     async verifyIdToken(idToken: IdToken): Promise<AuthCheckResult> {
 
-        console.log("Validating custom token");
+        console.log("Validating custom token..")
 
-        const result = await verifyToken(this.authAPIEndpoint, idToken.idToken, null)
+        const result: any = verifyAndDecode(idToken.idToken, this.jwtSigningKey)
 
-        if (!result || result.code == 400) throw result;
-        if (result && result.name == 'JsonWebTokenError') throw {code: 400, message: result.message}
-        if (result && result.name == "TokenExpiredError") throw {code: 401, message: `JWT Token expired at ${result.expiredAt}`}
+        if (!result) throw {code: 401, message: 'Failed token verification'};
 
         console.log("Custom token successfully validated");
 
         return {
-            sub: result.sub,
-            email: result.email,
+            sub: result.user,
+            email: result.user,
             authProvider: result.authProvider
         }
 
