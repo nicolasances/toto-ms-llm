@@ -10,7 +10,7 @@ export class Gemini implements LLM {
 
     constructor(execContext: ExecutionContext) {
         this.logger = execContext.logger
-        this.cid = execContext.cid
+        this.cid = String(execContext.cid)
     }
 
     async invoke(prompt: Prompt, options: PromptOptions): Promise<LLMResponse> {
