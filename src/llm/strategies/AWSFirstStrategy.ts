@@ -1,15 +1,16 @@
-import { Gemini } from "../Gemini.js";
 import { LLM } from "../LLMInterface.js";
 import { LLMStrategyInterface, NoMoreBackupLLMsError } from "./LLMStrategyInterface.js";
+import { AWSClaude } from "../AWSClaude.js";
+import { Gemini } from "../Gemini.js";
 
-export class GoogleFirstLLMStrategy implements LLMStrategyInterface {
+export class AWSFirstStrategy implements LLMStrategyInterface {
 
     backupLLMs: LLM[] = [
         new Gemini()
     ]
 
     getLLM(): LLM {
-        return new Gemini()
+        return new AWSClaude()
     }
 
     getBackupLLM(priority: number): LLM {
@@ -17,5 +18,6 @@ export class GoogleFirstLLMStrategy implements LLMStrategyInterface {
         if (priority >= this.backupLLMs.length) throw new NoMoreBackupLLMsError()
 
         return this.backupLLMs[priority]
+
     }
 }

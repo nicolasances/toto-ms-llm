@@ -5,17 +5,16 @@ import { ExecutionContext, Logger } from 'toto-api-controller';
 export class Gemini implements LLM {
 
     name = 'gemini-2.0-flash-lite'
-    logger: Logger;
-    cid: string;
 
-    constructor(execContext: ExecutionContext) {
-        this.logger = execContext.logger
-        this.cid = String(execContext.cid)
+    constructor() {
     }
 
-    async invoke(prompt: Prompt, options: PromptOptions): Promise<LLMResponse> {
+    async invoke(prompt: Prompt, options: PromptOptions, execContext: ExecutionContext): Promise<LLMResponse> {
 
-        this.logger.compute(this.cid, `Invoking model ${this.name} with options ${JSON.stringify(options)}`);
+        const logger = execContext.logger;
+        const cid = execContext.cid;
+
+        logger.compute(cid, `Invoking model ${this.name} with options ${JSON.stringify(options)}`);
 
         // Manage the option
         let finalPrompt = prompt.promptText;
@@ -35,7 +34,7 @@ export class Gemini implements LLM {
             contents: finalPrompt,
         });
 
-        this.logger.compute(this.cid, `Model ${this.name} responded.`)
+        logger.compute(cid, `Model ${this.name} responded.`)
 
 
         // JSON Formatting, if needed
@@ -43,10 +42,10 @@ export class Gemini implements LLM {
         
         if (options.outputFormat == 'json') {
             responseData = response.text?.replace("```json", "").replace("\\n", "").replace("```", "")
-            return { responseJSON: JSON.parse(String(responseData)) }
+            return { format: "json", value: JSON.parse(String(responseData)) }
         }
 
-        return { responseText: String(response.text) }
+        return { format: "text", value: String(response.text) }
 
 
     }

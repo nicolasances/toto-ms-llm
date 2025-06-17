@@ -1,3 +1,4 @@
+import { ExecutionContext } from "toto-api-controller";
 
 export interface LLM {
 
@@ -7,8 +8,10 @@ export interface LLM {
      * Invokes an LLM with the provided prompt 
      * 
      * @param prompt the prompt to send to the LLM
+     * @param options options to invoke the model
+     * @param execContext the execution context
      */
-    invoke(prompt: Prompt, options: PromptOptions): Promise<LLMResponse>
+    invoke(prompt: Prompt, options: PromptOptions, execContext: ExecutionContext): Promise<LLMResponse>
 
 }
 
@@ -25,7 +28,10 @@ export interface PromptOptions {
 
 export interface LLMResponse {
     
-    responseText?: string
-    responseJSON?: string
+    // Format of the response's "value" field
+    format: "json" | "text"
+
+    // Response from the LLM, with the format indicated by the "format" field
+    value: any
     
 }

@@ -10,7 +10,7 @@ export class ControllerConfig implements TotoControllerConfig {
     expectedAudience: string | undefined;
     totoAuthEndpoint: string | undefined;
     jwtSigningKey: string | undefined;
-
+    awsLLMEndpoint: string | undefined;
 
     async load(): Promise<any> {
 
@@ -31,6 +31,12 @@ export class ControllerConfig implements TotoControllerConfig {
         promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/toto-auth-endpoint/versions/latest` }).then(([version]: any) => {
 
             this.totoAuthEndpoint = version.payload!.data!.toString();
+
+        }));
+
+        promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/aws-sandbox-llm-api-endpoint/versions/latest` }).then(([version]: any) => {
+
+            this.awsLLMEndpoint = version.payload!.data!.toString();
 
         }));
 
