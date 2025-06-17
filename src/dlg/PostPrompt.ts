@@ -13,7 +13,7 @@ export class PostPrompt implements TotoDelegate {
         if (!userPrompt) throw new ValidationError(400, 'Missing user prompt');
         if (outputFormat && outputFormat != 'text' && outputFormat != 'json') throw new ValidationError(400, `Output format ${outputFormat} not accepted.`);
 
-        const llm = new GoogleFirstLLMStrategy().getLLM(execContext)
+        const llm = new GoogleFirstLLMStrategy().getLLM(execContext);
 
         return await llm.invoke(
             { promptText: userPrompt },
