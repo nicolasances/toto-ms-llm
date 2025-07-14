@@ -1,12 +1,13 @@
-import { LLM, LLMResponse, Prompt, PromptOptions } from "./LLMInterface.js";
+import { LLM, LLMProvider, LLMResponse, Prompt, PromptOptions } from "./LLMInterface.js";
 import { ExecutionContext, Logger } from 'toto-api-controller';
 import http from 'request'
 import { ControllerConfig } from '../Config.js';
 
 export class AWSClaude implements LLM {
 
-    name = 'claude-3.5-sonnet'
-
+    name = 'claude-3.5-sonnet';
+    provider: LLMProvider = 'aws';
+    
     async invoke(prompt: Prompt, options: PromptOptions, execContext: ExecutionContext): Promise<LLMResponse> {
 
         const logger = execContext.logger;
@@ -28,10 +29,10 @@ export class AWSClaude implements LLM {
 
         // JSON Formatting, if needed
         if (options.outputFormat == 'json') {
-            return { format: "json", value: JSON.parse(String(response)) }
+            return { format: "json", value: JSON.parse(String(response)), llmName: this.name, llmProvider: this.provider };
         }
 
-        return { format: "text", value: String(response) }
+        return { format: "text", value: String(response), llmName: this.name, llmProvider: this.provider };
 
 
     }

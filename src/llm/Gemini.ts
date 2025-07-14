@@ -1,10 +1,11 @@
 import * as genai from '@google/genai';
-import { LLM, LLMResponse, Prompt, PromptOptions } from "./LLMInterface.js";
+import { LLM, LLMProvider, LLMResponse, Prompt, PromptOptions } from "./LLMInterface.js";
 import { ExecutionContext, Logger } from 'toto-api-controller';
 
 export class Gemini implements LLM {
 
     name = 'gemini-2.0-flash-lite'
+    provider: LLMProvider = 'gcp';
 
     constructor() {
     }
@@ -42,10 +43,10 @@ export class Gemini implements LLM {
         
         if (options.outputFormat == 'json') {
             responseData = response.text?.replace("```json", "").replace("\\n", "").replace("```", "")
-            return { format: "json", value: JSON.parse(String(responseData)) }
+            return { format: "json", value: JSON.parse(String(responseData)), llmName: this.name, llmProvider: this.provider };
         }
 
-        return { format: "text", value: String(response.text) }
+        return { format: "text", value: String(response.text), llmName: this.name, llmProvider: this.provider };
 
 
     }
