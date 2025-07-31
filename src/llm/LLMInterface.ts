@@ -23,7 +23,8 @@ export interface Prompt {
 
 export interface PromptOptions {
 
-    outputFormat: "text" | "json"
+    outputFormat: "text" | "json", 
+    llmName?: string; 
 }
 
 export interface LLMResponse {
@@ -32,6 +33,9 @@ export interface LLMResponse {
     format: "json" | "text"
 
     // Response from the LLM, with the format indicated by the "format" field
-    value: any
+    value: any, 
+
+    llmName: string // The name of the LLM that generated this response
+    llmProvider: string // The provider of the LLM that generated this response, e.g. "aws", "gcp", etc.
     
 }

@@ -7,6 +7,10 @@ export class AWSClaude implements LLM {
 
     name = 'claude-3.5-sonnet'
 
+    constructor(name?: string) {
+        if (name) this.name = name;
+    }
+
     async invoke(prompt: Prompt, options: PromptOptions, execContext: ExecutionContext): Promise<LLMResponse> {
 
         const logger = execContext.logger;
@@ -22,16 +26,16 @@ export class AWSClaude implements LLM {
         if (options.outputFormat == 'json') finalPrompt += `\nFORMAT THE OUTPUT IN JSON, DO NOT PUT ANY OTHER TEXT.`
 
         // Invoke the LLM
-        const response = await callClaudeAPI(awsLLMEndpoint, finalPrompt);
+        const response = await callClaudeAPI(awsLLMEndpoint, finalPrompt, this.name);
 
         logger.compute(cid, `Model ${this.name} responded.`)
 
         // JSON Formatting, if needed
         if (options.outputFormat == 'json') {
-            return { format: "json", value: JSON.parse(String(response)) }
+            return { format: "json", value: JSON.parse(String(response).replace('```json', '').replace('```', '')), llmName: this.name, llmProvider: 'aws' }
         }
 
-        return { format: "text", value: String(response) }
+        return { format: "text", value: String(response), llmName: this.name, llmProvider: 'aws' }
 
 
     }
@@ -42,7 +46,7 @@ export class AWSClaude implements LLM {
  * This function calls the REST API and the provided endpoint, passing a prompt in the body. 
  * No authentication is used. 
  */
-function callClaudeAPI(endpoint: string, prompt: string): Promise<{ text: string }> {
+function callClaudeAPI(endpoint: string, prompt: string, llmName: string): Promise<{ text: string }> {
     return new Promise((resolve, reject) => {
         http(
             {
@@ -51,7 +55,10 @@ function callClaudeAPI(endpoint: string, prompt: string): Promise<{ text: string
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ prompt })
+                body: JSON.stringify({ 
+                    prompt: prompt,
+                    model: `anthropic.${llmName}`
+                })
             },
             (error, response, body) => {
 

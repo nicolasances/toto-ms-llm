@@ -6,11 +6,13 @@ import { Gemini } from "../Gemini.js";
 export class AWSFirstStrategy implements LLMStrategyInterface {
 
     backupLLMs: LLM[] = [
+        new AWSClaude("claude-3.7-sonnet"),
+        new AWSClaude("claude-3.5-sonnet"),
         new Gemini()
     ]
 
     getLLM(): LLM {
-        return new AWSClaude()
+        return new AWSClaude("claude-4-sonnet")
     }
 
     getBackupLLM(priority: number): LLM {

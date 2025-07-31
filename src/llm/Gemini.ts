@@ -42,10 +42,10 @@ export class Gemini implements LLM {
         
         if (options.outputFormat == 'json') {
             responseData = response.text?.replace("```json", "").replace("\\n", "").replace("```", "")
-            return { format: "json", value: JSON.parse(String(responseData)) }
+            return { format: "json", value: JSON.parse(String(responseData)), llmName: this.name, llmProvider: 'gcp' }
         }
 
-        return { format: "text", value: String(response.text) }
+        return { format: "text", value: String(response.text), llmName: this.name, llmProvider: 'gcp' }
 
 
     }
