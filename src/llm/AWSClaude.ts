@@ -32,7 +32,14 @@ export class AWSClaude implements LLM {
 
         // JSON Formatting, if needed
         if (options.outputFormat == 'json') {
-            return { format: "json", value: JSON.parse(String(response).replace('```json', '').replace('```', '')), llmName: this.name, llmProvider: 'aws' }
+            try {
+                const parsed = JSON.parse(String(response).replace('```json', '').replace('```', ''));
+                return { format: "json", value: parsed, llmName: this.name, llmProvider: 'aws' }
+            } catch (err) {
+                logger.compute(cid, `Failed to parse JSON response from Claude: ${err}`);
+                logger.compute(cid, `Response was: ${response}`);
+                throw new Error(`Failed to parse JSON response from Claude: ${err}`);
+            }
         }
 
         return { format: "text", value: String(response), llmName: this.name, llmProvider: 'aws' }
