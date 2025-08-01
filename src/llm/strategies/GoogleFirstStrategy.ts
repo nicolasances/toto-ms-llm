@@ -6,24 +6,17 @@ import { LLMStrategyInterface, NoMoreBackupLLMsError } from "./LLMStrategyInterf
 
 export class GoogleFirstLLMStrategy implements LLMStrategyInterface {
 
-    backupLLMs: LLM[] = [
+    llms: LLM[] = [
+        new Gemini(), 
+        new AWSClaude("claude-4-sonnet"),
         new AWSClaude("claude-3.7-sonnet"),
         new AWSClaude("claude-3.5-sonnet")
     ]
 
     getLLM(): LLM {
-        return new Gemini()
-    }
-
-    registerFailure(llm: LLM): void {
-        // Cache the failure, so that we can skip this LLM in future invocations
-        FAILED_LLM_CACHE.set(llm.name, { timestamp: Date.now() });
-    }
-
-    getBackupLLM(priority: number): LLM {
 
         // Find the first LLM that has not failed. Ignore priority (deprecated)
-        for (const llm of this.backupLLMs) {
+        for (const llm of this.llms) {
             if (!isLLMFailed(llm)) {
                 return llm;
             }
@@ -31,6 +24,11 @@ export class GoogleFirstLLMStrategy implements LLMStrategyInterface {
 
         // If we get here, it means that all backup LLMs have failed
         throw new NoMoreBackupLLMsError();
-
     }
+
+    registerFailure(llm: LLM): void {
+        // Cache the failure, so that we can skip this LLM in future invocations
+        FAILED_LLM_CACHE.set(llm.name, { timestamp: Date.now() });
+    }
+
 }
