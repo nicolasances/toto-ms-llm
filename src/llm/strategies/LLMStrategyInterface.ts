@@ -8,12 +8,12 @@ export interface LLMStrategyInterface {
     getLLM(): LLM
 
     /**
-     * Register that a failure has occurred for a specific LLM.
-     * This is used to track LLMs that are not working properly, so that they can be skipped in future invocations.
+     * Returns a backup LLM, in case the main LLM fails.
      * 
-     * @param llm the LLM to register as failed
+     * @param execContext the execution context
+     * @param priority the priority, rangind from 0 to +oo. The priority is used in case of many backup LLMs available. Each backup LLM must have a priority associated. 
      */
-    registerFailure(llm: LLM): void
+    getBackupLLM(priority: number): LLM;
 
 }
 
