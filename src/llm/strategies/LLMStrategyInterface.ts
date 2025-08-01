@@ -8,6 +8,14 @@ export interface LLMStrategyInterface {
     getLLM(): LLM
 
     /**
+     * Register that a failure has occurred for a specific LLM.
+     * This is used to track LLMs that are not working properly, so that they can be skipped in future invocations.
+     * 
+     * @param llm the LLM to register as failed
+     */
+    registerFailure(llm: LLM): void
+
+    /**
      * Returns a backup LLM, in case the main LLM fails.
      * 
      * @param execContext the execution context

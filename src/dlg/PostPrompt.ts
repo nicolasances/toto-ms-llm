@@ -61,15 +61,13 @@ export class PostPrompt implements TotoDelegate {
 
             // 2. If we get here LLM invocations have still failed. 
             // Let's switch LLM
-            let llmPriority = 0;
-
             while (true) {
 
                 try {
 
-                    logger.compute(cid, `Trying a backup LLM with priority ${llmPriority}.`)
+                    logger.compute(cid, `Trying a backup LLM.`)
 
-                    llm = strategy.getBackupLLM(llmPriority++);
+                    llm = strategy.getBackupLLM(0); // TODO: remove priority, it is deprecated
 
                     logger.compute(cid, `Chosen LLM ${llm.name}. Trying invocation.`)
 
