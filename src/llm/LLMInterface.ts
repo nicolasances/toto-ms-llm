@@ -16,6 +16,13 @@ export interface LLM {
 
 }
 
+export const SUPPORTED_LLMS = [
+    {name: "claude-3.5-sonnet", provider: "aws"},
+    {name: "claude-3.7-sonnet", provider: "aws"},
+    {name: "claude-4-sonnet", provider: "aws"},
+    {name: "gemini-2.0-flash-lite", provider: "gcp"},
+]
+
 export interface Prompt {
 
     promptText: string
