@@ -6,6 +6,7 @@ import { ControllerConfig } from '../Config.js';
 export class AWSClaude implements LLM {
 
     name = 'claude-3.5-sonnet'
+    provider = 'aws';
 
     constructor(name?: string) {
         if (name) this.name = name;

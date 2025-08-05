@@ -5,12 +5,24 @@ import { TotoAuthProvider } from './totoauth/TotoAuthProvider.js';
 
 const secretManagerClient = new SecretManagerServiceClient();
 
+export const collections = {
+    health: 'health',
+};
+
+
 export class ControllerConfig implements TotoControllerConfig {
 
     expectedAudience: string | undefined;
     totoAuthEndpoint: string | undefined;
     jwtSigningKey: string | undefined;
     awsLLMEndpoint: string | undefined;
+    mongoUser: string | undefined;
+    mongoPwd: string | undefined;
+    mongoHost: string | undefined;
+    dbName: string = "totollm";
+    collections: string[] = [
+        "health"
+    ]
 
     async load(): Promise<any> {
 
@@ -40,6 +52,24 @@ export class ControllerConfig implements TotoControllerConfig {
 
         }));
 
+        promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/toto-ms-llm-mongo-user/versions/latest` }).then(([version]) => {
+
+            this.mongoUser = version.payload!.data!.toString();
+
+        }));
+
+        promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/toto-ms-llm-mongo-pswd/versions/latest` }).then(([version]) => {
+
+            this.mongoPwd = version.payload!.data!.toString();
+
+        }));
+
+        promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/mongo-host/versions/latest` }).then(([version]) => {
+
+            this.mongoHost = version.payload!.data!.toString();
+
+        }));
+
 
         await Promise.all(promises);
 
@@ -55,6 +85,13 @@ export class ControllerConfig implements TotoControllerConfig {
         }
     }
 
+    async getMongoClient() {
+
+        const mongoUrl = `mongodb://${this.mongoUser}:${this.mongoPwd}@${this.mongoHost}:27017/${this.dbName}`
+
+        return await new MongoClient(mongoUrl).connect();
+    }
+    
     getExpectedAudience(): string {
 
         return String(this.expectedAudience)

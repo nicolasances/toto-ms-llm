@@ -4,7 +4,8 @@ import { ExecutionContext, Logger } from 'toto-api-controller';
 
 export class Gemini implements LLM {
 
-    name = 'gemini-2.0-flash-lite'
+    name = 'gemini-2.0-flash-lite';
+    provider = "gcp";
 
     constructor() {
     }

@@ -5,15 +5,7 @@ export interface LLMStrategyInterface {
     /**
      * Generic strategy for picking an LLM
      */
-    getLLM(): LLM
-
-    /**
-     * Returns a backup LLM, in case the main LLM fails.
-     * 
-     * @param execContext the execution context
-     * @param priority the priority, rangind from 0 to +oo. The priority is used in case of many backup LLMs available. Each backup LLM must have a priority associated. 
-     */
-    getBackupLLM(priority: number): LLM;
+    getPrioritizedLLMs(): LLM[] 
 
 }
 

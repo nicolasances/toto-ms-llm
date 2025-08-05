@@ -3,6 +3,7 @@ import { ExecutionContext } from "toto-api-controller";
 export interface LLM {
 
     name: string; // The name of the LLM. E.g. 'gemini-2.0-flash-lite'
+    provider: string; // The provider of the LLM, e.g. 'aws', 'gcp', etc.
 
     /**
      * Invokes an LLM with the provided prompt 
@@ -24,7 +25,6 @@ export interface Prompt {
 export interface PromptOptions {
 
     outputFormat: "text" | "json", 
-    llmName?: string; 
 }
 
 export interface LLMResponse {
