@@ -1,4 +1,6 @@
-import { ExecutionContext } from "toto-api-controller";
+import { ExecutionContext, ValidationError } from "toto-api-controller";
+import { AWSClaude } from "./AWSClaude.js";
+import { Gemini } from "./Gemini.js";
 
 export interface LLM {
 
@@ -14,6 +16,24 @@ export interface LLM {
      */
     invoke(prompt: Prompt, options: PromptOptions, execContext: ExecutionContext): Promise<LLMResponse>
 
+}
+
+export class LLMFactory {
+    
+    static getLLM(llmName: string): LLM {
+
+        // If the LLM is a claude model, get the AWS Claude one
+        if (llmName.startsWith("claude")) {
+            return new AWSClaude(llmName);
+        }
+
+        // If the LLM is a Gemini model, get the GCP Gemini one
+        if (llmName.startsWith("gemini")) {
+            return new Gemini();
+        }
+
+        throw new ValidationError(400, `LLM ${llmName} not supported.`);
+    }
 }
 
 export const SUPPORTED_LLMS = [
